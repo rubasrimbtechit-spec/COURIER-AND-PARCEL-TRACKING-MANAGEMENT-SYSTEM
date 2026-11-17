@@ -1,0 +1,11 @@
+flowchart LR
+  Operator([Operator / Admin]) --> UC1((Manage customers))
+  Operator --> UC2((Register parcel))
+  Operator --> UC3((Assign personnel))
+  Operator --> UC4((Update parcel status))
+  Operator --> UC5((Record delivery attempt))
+  Operator --> UC6((View shipment report))
+  Tracker([Tracking user]) --> UC7((Track parcel))
+  UC2 --> UC8((Calculate delivery charge))
+  UC4 --> UC9((Append tracking history))
+  UC7 --> UC9

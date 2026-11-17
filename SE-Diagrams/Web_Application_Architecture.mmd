@@ -1,0 +1,8 @@
+flowchart TB
+  U[Administrator / Tracking User] --> B[Responsive Browser UI<br/>HTML · CSS · JavaScript]
+  B -->|HTTP / JSON| C[Spring Boot REST Controllers]
+  C --> S[Service Layer<br/>Validation · Tariff · Transactions]
+  S --> R[Repository Layer<br/>Spring JDBC]
+  R --> D[(MySQL 8<br/>Customers · Personnel · Parcels<br/>Tracking History · Delivery Attempts)]
+  L[Original Java Console App] --> D
+  P[Original Python Retrieval / Analytics] --> D

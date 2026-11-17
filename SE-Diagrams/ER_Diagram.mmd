@@ -1,0 +1,42 @@
+erDiagram
+  CUSTOMERS ||--o{ PARCELS : sends
+  DELIVERY_PERSONNEL o|--o{ PARCELS : assigned_to
+  PARCELS ||--o{ TRACKING_HISTORY : records
+  DELIVERY_PERSONNEL o|--o{ TRACKING_HISTORY : updates
+  PARCELS ||--o{ DELIVERY_ATTEMPTS : has
+  CUSTOMERS {
+    bigint customer_id PK
+    varchar full_name
+    varchar phone UK
+    varchar email
+    varchar address_line
+    varchar city
+  }
+  PARCELS {
+    bigint parcel_id PK
+    varchar tracking_number UK
+    bigint sender_customer_id FK
+    bigint assigned_personnel_id FK
+    decimal weight_kg
+    decimal delivery_charge
+    varchar current_status
+  }
+  DELIVERY_PERSONNEL {
+    bigint personnel_id PK
+    varchar full_name
+    varchar phone UK
+    varchar service_area
+  }
+  TRACKING_HISTORY {
+    bigint history_id PK
+    bigint parcel_id FK
+    bigint updated_by_personnel_id FK
+    varchar status
+    datetime updated_at
+  }
+  DELIVERY_ATTEMPTS {
+    bigint attempt_id PK
+    bigint parcel_id FK
+    int attempt_no
+    varchar outcome
+  }

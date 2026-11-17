@@ -1,0 +1,35 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: courier_tracking
+      MYSQL_USER: courier_app
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+    volumes:
+      - courier_mysql:/var/lib/mysql
+      - ../Database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ../Database/sample_data.sql:/docker-entrypoint-initdb.d/02-sample.sql:ro
+    healthcheck:
+      test: ["CMD","mysqladmin","ping","-h","localhost","-u","root","-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      PORT: 8080
+      DB_URL: jdbc:mysql://mysql:3306/courier_tracking?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USER: courier_app
+      DB_PASSWORD: ${DB_PASSWORD}
+volumes:
+  courier_mysql:

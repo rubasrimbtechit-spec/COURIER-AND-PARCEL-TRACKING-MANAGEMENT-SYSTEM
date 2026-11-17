@@ -1,0 +1,9 @@
+flowchart TB
+  U[Operator / Tracking User] --> UI[Java Console Application]
+  UI --> BL[Validation and Business Logic]
+  BL --> JDBC[JDBC Data Access]
+  JDBC <--> DB[(MySQL courier_tracking)]
+  DB --> PY[Python Retrieval and Preprocessing]
+  PY --> CSV[Processed CSV Dataset]
+  CSV --> VIS[Pandas and Matplotlib Visualization]
+  VIS --> PNG[Saved Chart Images]

@@ -1,0 +1,41 @@
+# Java / Maven
+JP-Source/target/
+*.class
+*.jar
+!JP-Source/lib/*.jar
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+FDS-Python/output/*.csv
+FDS-Visualization/output/*.png
+
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+!Deployment/.env.example
+*.pem
+*.key
+secrets.properties
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Spring Boot / deployment
+Backend/target/
+.env
+# Local Spring Boot configuration
+application-local.properties
+**/application-local.properties
+
+# Database backups
+*.sql.bak
+*.dump

@@ -1,0 +1,10 @@
+PASS: original project archive extracted and all original academic folders/files retained.
+PASS: Spring Boot Maven POM is well-formed XML.
+PASS: Java tariff calculator compiles independently with javac.
+PASS: frontend JavaScript passes Node.js syntax check.
+PASS: Docker Compose and Render YAML parse successfully.
+PASS: Java package declarations match Backend source directory structure (checked).
+NOT RUN: Maven package/test — Maven executable unavailable in packaging environment.
+NOT RUN: full Java compile — Spring dependencies unavailable without Maven dependency resolution.
+NOT RUN: live MySQL/API/browser integration — no MySQL service configured.
+NOT PERFORMED: public deployment — hosting account and managed MySQL are user-provisioned.

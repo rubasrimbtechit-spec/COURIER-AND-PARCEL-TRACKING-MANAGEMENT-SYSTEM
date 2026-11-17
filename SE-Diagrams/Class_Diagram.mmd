@@ -1,0 +1,40 @@
+classDiagram
+  class Customer {
+    +long customerId
+    +String fullName
+    +String phone
+    +String address
+    +String city
+  }
+  class Parcel {
+    +long parcelId
+    +String trackingNumber
+    +BigDecimal weightKg
+    +BigDecimal deliveryCharge
+    +String currentStatus
+    +register()
+    +calculateCharge()
+    +updateStatus()
+  }
+  class DeliveryPersonnel {
+    +long personnelId
+    +String fullName
+    +String phone
+    +String serviceArea
+  }
+  class TrackingHistory {
+    +long historyId
+    +String status
+    +String location
+    +Timestamp updatedAt
+  }
+  class DeliveryAttempt {
+    +long attemptId
+    +int attemptNo
+    +String outcome
+    +Timestamp attemptedAt
+  }
+  Customer "1" --> "0..*" Parcel : sends
+  DeliveryPersonnel "0..1" --> "0..*" Parcel : assigned
+  Parcel "1" --> "0..*" TrackingHistory : has
+  Parcel "1" --> "0..*" DeliveryAttempt : has

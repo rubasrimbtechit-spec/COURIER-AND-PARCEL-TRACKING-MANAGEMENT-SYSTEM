@@ -1,24 +1,86 @@
+
 package com.college.courier.web.controller;
-import org.springframework.http.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.dao.DataIntegrityViolationException;
-import java.util.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 @RestControllerAdvice
 public class ApiExceptionHandler {
- @ExceptionHandler(MethodArgumentNotValidException.class)
- public ResponseEntity<Map<String,Object>> validation(MethodArgumentNotValidException e){
-  List<String> errors=e.getBindingResult().getFieldErrors().stream().map(x->x.getField()+": "+x.getDefaultMessage()).toList();
-  return ResponseEntity.badRequest().body(Map.of("error","Validation failed","details",errors));
- }
- @ExceptionHandler(DataIntegrityViolationException.class)
- public ResponseEntity<Map<String,Object>> conflict(DataIntegrityViolationException e){
-  return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error","Database constraint violation. Check duplicate phone numbers and referenced IDs."));
- }
- @ExceptionHandler(Exception.class)
- public ResponseEntity<Map<String,Object>> other(Exception e){
-  if(e instanceof org.springframework.web.server.ResponseStatusException r)
-   return ResponseEntity.status(r.getStatusCode()).body(Map.of("error",r.getReason()==null?"Request failed":r.getReason()));
-  return ResponseEntity.status(500).body(Map.of("error","An unexpected server error occurred."));
- }
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(ApiExceptionHandler.class);
+
+    private final ObjectMapper objectMapper;
+
+    public ApiExceptionHandler(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public void validation(
+            MethodArgumentNotValidException e,
+            HttpServletResponse response) throws IOException {
+
+        List<String> errors = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(x -> x.getField() + ": " + x.getDefaultMessage())
+                .toList();
+
+        writeJson(response, 400,
+                Map.of("error", "Validation failed", "details", errors));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public void conflict(
+            DataIntegrityViolationException e,
+            HttpServletResponse response) throws IOException {
+
+        logger.warn("Database constraint violation", e);
+
+        writeJson(response, 409,
+                Map.of("error",
+                "Database constraint violation. Check duplicate phone numbers and referenced IDs."));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public void other(
+            Exception e,
+            HttpServletResponse response) throws IOException {
+
+        logger.error("Unexpected application error", e);
+
+        int status = 500;
+        String message = "An unexpected server error occurred.";
+
+        if (e instanceof ResponseStatusException r) {
+            status = r.getStatusCode().value();
+            message = r.getReason() == null
+                    ? "Request failed"
+                    : r.getReason();
+        }
+
+        writeJson(response, status, Map.of("error", message));
+    }
+
+    private void writeJson(
+            HttpServletResponse response,
+            int status,
+            Map<String, Object> body) throws IOException {
+
+        response.setStatus(status);
+        response.setContentType("application/json;charset=UTF-8");
+        objectMapper.writeValue(response.getWriter(), body);
+    }
 }
